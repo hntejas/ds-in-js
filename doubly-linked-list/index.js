@@ -69,14 +69,91 @@ class DoublyLinkedList {
 
     if (!this.head) {
       this.head = newNode;
-      this.tail = this.head;
+      this.tail = newNode;
     } else {
-      newNode.next = this.head;
       this.head.prev = newNode;
+      newNode.next = this.head;
       this.head = newNode;
     }
 
     this.length++;
     return newNode;
+  }
+
+  get(index) {
+    if (index < 0 || index >= this.length) {
+      return null;
+    }
+
+    var indexCounter;
+    var current;
+    if (index < Math.floor(this.length)) {
+      indexCounter = 0;
+      current = this.head;
+      while (indexCounter === index) {
+        current = current.next;
+        indexCounter++;
+      }
+    } else {
+      indexCounter = this.length - 1;
+      current = this.head;
+      while (indexCounter === index) {
+        current = current.prev;
+        indexCounter--;
+      }
+    }
+    return current;
+  }
+
+  set(index, value) {
+    var node = this.get(index);
+    if (node !== null) {
+      node.val = value;
+      return true;
+    }
+    return false;
+  }
+
+  insert(index, value) {
+    var newNode = new Node(value);
+    var prevNode = this.get(index - 1);
+    if (index < 0 || index > this.length) {
+      return false;
+    }
+    if (index === 0) {
+      !!this.unshift(value);
+    }
+    if (index === this.length) {
+      !!this.push(value);
+    }
+    if (prevNode !== null) {
+      newNode.prev = prevNode;
+      newNode.next = prevNode.next;
+      prevNode.next = newNode;
+      newNode.next.prev = newNode;
+      this.length++;
+      return true;
+    }
+    return false;
+  }
+
+  remove(index) {
+    if (index < 0 || index >= this.length) {
+      return false;
+    }
+    if (index === 0) return !!this.shift();
+    if (index === this.length - 1) return !!this.pop();
+
+    var removedNode = this.get(index);
+    if (removedNode != null) {
+      var beforeNode = removedNode.prev;
+      var afterNode = removedNode.next;
+      beforeNode.next = afterNode;
+      afterNode.prev = beforeNode;
+      removedNode.prev = null;
+      removedNode.next = null;
+      this.length--;
+      return removedNode;
+    }
   }
 }
